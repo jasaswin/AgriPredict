@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPredict - Crop Recommendation</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        background-color: #f4f9f4;
+    }
+    .card-header {
+        background-color: #2e7d32;
+        color: white;
+    }
+    .btn-predict {
+        background-color: #2e7d32;
+        color: white;
+    }
+    .btn-predict:hover {
+        background-color: #1b5e20;
+        color: white;
+    }
+    #result-box {
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<div class="container py-5">
+
+    <div class="text-center mb-4">
+        <h1>🌱 AgriPredict</h1>
+        <p class="text-muted">Enter your soil and weather values to get a crop recommendation</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">Field Information</h5>
+                </div>
+                <div class="card-body">
+
+                    <form id="predict-form">
+                        <div class="mb-3">
+                            <label class="form-label">Nitrogen (N)</label>
+                            <input type="number" step="any" class="form-control" id="N" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phosphorus (P)</label>
+                            <input type="number" step="any" class="form-control" id="P" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Potassium (K)</label>
+                            <input type="number" step="any" class="form-control" id="K" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Temperature (°C)</label>
+                            <input type="number" step="any" class="form-control" id="temperature" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Humidity (%)</label>
+                            <input type="number" step="any" class="form-control" id="humidity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rainfall (mm)</label>
+                            <input type="number" step="any" class="form-control" id="rainfall" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Soil pH</label>
+                            <input type="number" step="any" class="form-control" id="ph" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-predict">Predict</button>
+                        </div>
+                    </form>
+
+                    <div id="error-box" class="alert alert-danger mt-3" style="display:none;"></div>
+
+                    <div id="result-box" class="alert alert-success mt-4 text-center">
+                        <h5>Recommended Crop</h5>
+                        <h2 id="crop-name"> </h2>
+                        <hr>
+                        <p class="mb-1"><strong>Top 3 possibilities:</strong></p>
+                        <ul id="top3-list" class="list-unstyled mb-0"></ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const form = document.getElementById("predict-form");
+    const resultBox = document.getElementById("result-box");
+    const errorBox = document.getElementById("error-box");
+    const cropName = document.getElementById("crop-name");
+    const top3List = document.getElementById("top3-list");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        // hide old messages
+        errorBox.style.display = "none";
+        resultBox.style.display = "none";
+
+        // collect form values
+        const payload = {
+            N: document.getElementById("N").value,
+            P: document.getElementById("P").value,
+            K: document.getElementById("K").value,
+            temperature: document.getElementById("temperature").value,
+            humidity: document.getElementById("humidity").value,
+            rainfall: document.getElementById("rainfall").value,
+            ph: document.getElementById("ph").value
+        };
+
+        try {
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                errorBox.textContent = data.error || "Something went wrong.";
+                errorBox.style.display = "block";
+                return;
+            }
+
+            // show the main prediction
+            cropName.textContent = "🌾 " + data.recommended_crop;
+
+            // show top 3 probable crops
+            top3List.innerHTML = "";
+            data.top_3.forEach(function (item) {
+                const li = document.createElement("li");
+                li.textContent = item.crop + " — " + item.confidence + "%";
+                top3List.appendChild(li);
+            });
+
+            resultBox.style.display = "block";
+
+        } catch (err) {
+            errorBox.textContent = "Could not reach the server. Is app.py running?";
+            errorBox.style.display = "block";
+        }
+    });
+</script>
+
+</body>
+</html>
