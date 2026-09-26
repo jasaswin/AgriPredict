@@ -18,7 +18,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-# Load the trained model and the feature order it expects
+# Loading the trained model and the feature order it expects
 model = joblib.load("model/crop_model.pkl")
 FEATURES = joblib.load("model/feature_order.pkl")
 
@@ -38,13 +38,13 @@ def predict():
         if missing:
             return jsonify({"error": f"Missing fields: {missing}"}), 400
 
-        # Build the feature array in the exact order the model was trained on
+        # Building the feature array in the exact order the model was trained on
         values = [float(input_data[f]) for f in FEATURES]
         X = np.array(values).reshape(1, -1)
 
         prediction = model.predict(X)[0]
 
-        # Also return top-3 probable crops so the UI can show extra info
+        # Also returning top-3 probable crops so the UI can show extra info
         probabilities = model.predict_proba(X)[0]
         classes = model.classes_
         top3_idx = np.argsort(probabilities)[::-1][:3]
