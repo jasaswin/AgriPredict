@@ -1,105 +1,229 @@
 # 🌱 AgriPredict — Crop Recommendation System
 
-AgriPredict predicts the most suitable crop for a piece of farmland based on
-soil nutrients (N, P, K), temperature, humidity, rainfall and soil pH, using
-a Random Forest classifier trained with scikit-learn, served through a
-Flask REST API, with a simple HTML/Bootstrap/JavaScript frontend.
+AgriPredict is a crop recommendation system that predicts the most suitable
+crop for a piece of farmland based on soil nutrients (N, P, K), temperature,
+humidity, rainfall and soil pH.
 
-## 📁 Project structure
+The project uses a **Random Forest classifier** trained with scikit-learn,
+served through a **Flask REST API**, with a simple **HTML, Bootstrap and
+JavaScript frontend**.
 
-```
+🌐 **Live Demo:**  
+https://agripredict-txr5.onrender.com
+
+---
+
+## 🚀 Live Application
+
+You can try the deployed application here:
+
+👉 **[AgriPredict — Live Demo](https://agripredict-txr5.onrender.com)**
+
+The application is deployed on **Render** and includes both the frontend
+and Flask backend in a single deployment.
+
+---
+
+## 📁 Project Structure
+
+```text
 AgriPredict/
 ├── data/
-│   ├── generate_dataset.py   # creates crop_data.csv (synthetic, 22 crops)
-│   └── crop_data.csv         # training dataset
+│   ├── generate_dataset.py   # Creates crop_data.csv (synthetic, 22 crops)
+│   └── crop_data.csv         # Training dataset
+│
 ├── model/
-│   ├── train_model.py        # trains & saves the RandomForest model
-│   ├── crop_model.pkl        # trained model (already included)
-│   └── feature_order.pkl     # feature column order (already included)
+│   ├── train_model.py        # Trains & saves the Random Forest model
+│   ├── crop_model.pkl        # Trained model
+│   └── feature_order.pkl     # Feature column order
+│
 ├── templates/
-│   └── index.html            # Bootstrap + vanilla JS frontend
-├── app.py                    # Flask REST API
-├── requirements.txt
+│   └── index.html            # Bootstrap + vanilla JavaScript frontend
+│
+├── app.py                    # Flask REST API and application entry point
+├── requirements.txt          # Python dependencies
 └── README.md
-```
 
-The trained model (`crop_model.pkl`) is already included, so you can run the
-app immediately without retraining. Retraining steps are included below if
-you want to regenerate it or use your own dataset.
+The trained model (crop_model.pkl) is already included in the repository,
+so the application can be run immediately without retraining.
 
-## 🚀 Quick start
+Retraining instructions are provided below if you want to regenerate the
+model or use your own dataset.
 
-1. **Install Python 3.9+** if you don't already have it.
+✨ Features
+🌱 Crop recommendation based on soil and weather conditions
+🧪 Uses N, P, K soil nutrient values
+🌡️ Temperature-based prediction
+💧 Humidity and rainfall analysis
+🧫 Soil pH consideration
+🤖 Random Forest machine learning model
+📊 Top-3 crop predictions with confidence percentages
+⚡ Flask REST API
+🎨 Responsive Bootstrap frontend
+📱 Simple and user-friendly interface
+🚀 Deployed online using Render
+🛠️ Technologies Used
+Backend
+Python
+Flask
+NumPy
+Pandas
+Scikit-learn
+Joblib
+Gunicorn
+Machine Learning
+Random Forest Classifier
+Train/Test Split
+Synthetic crop recommendation dataset
+Model serialization using Joblib
+Frontend
+HTML5
+CSS3
+Bootstrap
+Vanilla JavaScript
+Fetch API
+Deployment
+GitHub
+Render
+🚀 Quick Start
+1. Clone the repository
+git clone https://github.com/jasaswin/AgriPredict.git
+cd AgriPredict
+2. Install Python
 
-2. **Install dependencies**
+Install Python 3.9+ if you don't already have it.
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+You can check your installed version with:
 
-3. **Run the Flask app**
+python --version
+3. Install dependencies
 
-   ```bash
-   python app.py
-   ```
+Run:
 
-4. **Open the app**
+pip install -r requirements.txt
+4. Run the Flask application
+python app.py
 
-   Go to `http://127.0.0.1:5000` in your browser. Fill in the form and click
-   **Predict**.
+You should see the Flask application running locally.
 
-## 🔁 (Optional) Retrain the model
+5. Open the application
 
-If you want to regenerate the dataset or retrain the model:
+Open your browser and go to:
 
-```bash
+http://127.0.0.1:5000
+
+Enter the soil and weather information and click Predict.
+
+🔁 Optional — Retrain the Model
+
+If you want to regenerate the dataset or retrain the model, follow these
+steps.
+
+Generate the dataset
 cd data
-python generate_dataset.py      # regenerates crop_data.csv
+python generate_dataset.py
+
+This regenerates:
+
+data/crop_data.csv
+Train the model
+
+Go back to the project root and enter the model directory:
 
 cd ../model
-python train_model.py           # retrains and overwrites crop_model.pkl
-```
 
-You can also swap `data/crop_data.csv` for a real-world dataset (for
-example, the popular "Crop Recommendation Dataset" on Kaggle) as long as it
-has the same columns: `N, P, K, temperature, humidity, rainfall, ph, label`.
+Then run:
 
-## 🧠 How it works
+python train_model.py
 
-```
+This retrains the Random Forest model and generates:
+
+model/crop_model.pkl
+
+The feature order is stored in:
+
+model/feature_order.pkl
+🧠 How It Works
 Farmer enters soil & weather information
-              ↓
-        Flask REST API  (POST /predict)
-              ↓
-        Data preprocessing (feature ordering)
-              ↓
+                  ↓
+             Flask App
+                  ↓
+          POST /predict API
+                  ↓
+       Feature Validation & Ordering
+                  ↓
        Trained Random Forest Model
-              ↓
-        Crop Prediction (+ top-3 confidences)
-              ↓
-       Recommended Crop shown on the page
-```
+                  ↓
+       Crop Prediction + Top-3
+                  ↓
+       Recommended Crop displayed
+Prediction Process
+The user enters soil and weather parameters.
+The frontend sends the values to the Flask /predict endpoint.
+Flask validates that all required features are present.
+The input values are arranged in the exact order expected by the model.
+The Random Forest model generates a crop prediction.
+The model's prediction probabilities are calculated.
+The top 3 probable crops are returned.
+The frontend displays the recommended crop and confidence values.
+🤖 Machine Learning Model
 
-- **Pandas** loads and cleans `crop_data.csv` (drops duplicates/missing
-  values) in `train_model.py`.
-- **scikit-learn**'s `train_test_split` splits the data 80/20 into
-  train/test sets.
-- A **RandomForestClassifier** (100 trees) is trained on the training set
-  and evaluated on the test set (~97% accuracy on this synthetic dataset).
-- **joblib** saves the trained model to `model/crop_model.pkl` so Flask can
-  load it instantly without retraining.
-- **Flask** exposes a single `POST /predict` endpoint that accepts JSON,
-  runs it through the model, and returns the recommended crop plus the
-  top-3 most likely crops with confidence percentages.
-- The **frontend** (`templates/index.html`) is plain Bootstrap + vanilla
-  JavaScript — no build tools, no frameworks — that calls `/predict` with
-  `fetch()` and displays the result.
+AgriPredict uses a:
 
-## 📨 API example
+RandomForestClassifier
 
-**Request** — `POST /predict`
+The model is trained using the following features:
 
-```json
+N
+P
+K
+temperature
+humidity
+rainfall
+ph
+
+The target variable is:
+
+label
+
+The training process uses an 80/20 train-test split.
+
+The trained model is saved using Joblib:
+
+model/crop_model.pkl
+
+This allows the Flask application to load the model directly without
+retraining every time the application starts.
+
+📊 Input Parameters
+
+The application accepts the following parameters:
+
+Parameter	Description
+N	Nitrogen content in soil
+P	Phosphorus content in soil
+K	Potassium content in soil
+temperature	Temperature
+humidity	Humidity
+rainfall	Rainfall
+ph	Soil pH
+
+Example:
+
+N: 90
+P: 42
+K: 43
+Temperature: 25.5
+Humidity: 80
+Rainfall: 200
+pH: 6.5
+📨 API Documentation
+POST /predict
+
+The /predict endpoint accepts soil and weather information as JSON and
+returns the recommended crop along with the top 3 predictions.
+
+Request
 {
   "N": 90,
   "P": 42,
@@ -109,46 +233,91 @@ Farmer enters soil & weather information
   "rainfall": 200,
   "ph": 6.5
 }
-```
-
-**Response**
-
-```json
+Response
 {
   "recommended_crop": "rice",
   "top_3": [
-    { "crop": "rice", "confidence": 82.0 },
-    { "crop": "jute", "confidence": 9.0 },
-    { "crop": "sugarcane", "confidence": 4.0 }
+    {
+      "crop": "rice",
+      "confidence": 82.0
+    },
+    {
+      "crop": "jute",
+      "confidence": 9.0
+    },
+    {
+      "crop": "sugarcane",
+      "confidence": 4.0
+    }
   ]
 }
-```
+🧪 Testing the API
 
-You can test this endpoint directly with Postman or `curl`:
+You can test the API using Postman or curl.
 
-```bash
+Local API
 curl -X POST http://127.0.0.1:5000/predict \
   -H "Content-Type: application/json" \
-  -d '{"N":90,"P":42,"K":43,"temperature":25.5,"humidity":80,"rainfall":200,"ph":6.5}'
-```
+  -d "{\"N\":90,\"P\":42,\"K\":43,\"temperature\":25.5,\"humidity\":80,\"rainfall\":200,\"ph\":6.5}"
+Live API
 
-## 📝 Notes
+The deployed API is available at:
 
-- The dataset in `data/crop_data.csv` is **synthetically generated** from
-  typical agronomic ranges for 22 crops (see `generate_dataset.py`) so the
-  project works fully offline. Swap in a real dataset for production use.
--"""
-app.py
-------
-Simple Flask REST API for AgriPredict.
+https://agripredict-txr5.onrender.com/predict
 
-Routes:
-    GET  /              -> serves the frontend (index.html)
-    POST /predict        -> takes soil/weather values as JSON, returns predicted crop
+Example:
 
-Run with:
-    python app.py
-Then open http://127.0.0.1:5000 in your browser.
-"""
+curl -X POST https://agripredict-txr5.onrender.com/predict \
+  -H "Content-Type: application/json" \
+  -d "{\"N\":90,\"P\":42,\"K\":43,\"temperature\":25.5,\"humidity\":80,\"rainfall\":200,\"ph\":6.5}"
+🌐 Deployment
+
+AgriPredict is deployed using Render.
+
+Deployment Architecture
+                    GitHub
+                       │
+                       ↓
+              Render Deployment
+                       │
+                       ↓
+              Flask Application
+                 /           \
+                ↓             ↓
+          HTML Frontend    ML Model
+                              │
+                              ↓
+                       Crop Prediction
+
+Since the frontend is served directly through Flask using:
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+both the frontend and backend are deployed together on Render.
+
+Live URL
+
+👉 https://agripredict-txr5.onrender.com
+
+Notes
+The dataset in data/crop_data.csv is synthetically generated from
+typical agronomic ranges for 22 crops.
+The project is designed as a machine learning demonstration project.
+The trained model is already included in the repository.
+The model can be replaced with a real-world crop recommendation dataset.
+If using a different dataset, maintain the required feature columns:
+N
+P
+K
+temperature
+humidity
+rainfall
+ph
+label
+Predictions are dependent on the data used to train the model.
+Inputs outside the ranges represented in the training dataset may produce
+less meaningful recommendations.
 
 
